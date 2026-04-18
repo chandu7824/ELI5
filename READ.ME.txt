@@ -1,0 +1,606 @@
+================================================================================
+                    EXPLAIN LIKE I'M 5 (ELI5) - Complete Setup Guide
+================================================================================
+
+Project Overview
+================
+ELI5 is a Q&A platform where users can ask questions and get simple explanations
+(like explaining to a 5-year-old). The AI automatically answers first, followed
+by community answers. Users can vote, comment, and get notifications.
+
+================================================================================
+                            SYSTEM REQUIREMENTS
+================================================================================
+
+Required Software:
+- Node.js (v18 or higher)
+- MongoDB (v6 or higher) OR MongoDB Atlas account
+- Git (optional)
+
+Recommended Hardware:
+- RAM: 4GB minimum
+- Storage: 1GB free space
+- OS: Windows, MacOS, or Linux
+
+================================================================================
+                            PROJECT STRUCTURE
+================================================================================
+
+eli5-app/
+├── backend/
+│   ├── config/           - Database configuration
+│   ├── controllers/      - Business logic
+│   ├── middleware/       - Auth & admin middleware
+│   ├── models/           - Database schemas
+│   ├── routes/           - API routes
+│   ├── scripts/          - Utility scripts
+│   ├── services/         - AI & notification services
+│   ├── utils/            - Helper functions
+│   ├── .env              - Environment variables
+│   ├── package.json      - Backend dependencies
+│   └── server.js         - Main server file
+│
+└── frontend/
+    ├── public/           - Static files
+    ├── src/
+    │   ├── components/   - React components
+    │   ├── contexts/     - Auth context
+    │   ├── pages/        - Page components
+    │   ├── services/     - API service
+    │   ├── styles/       - CSS & animations
+    │   ├── App.jsx       - Main app
+    │   ├── index.css     - Global styles
+    │   └── index.jsx     - Entry point
+    ├── .env              - Frontend env variables
+    ├── package.json      - Frontend dependencies
+    ├── tailwind.config.js - Tailwind CSS config
+    └── vite.config.js    - Vite config
+
+================================================================================
+                            INSTALLATION STEPS
+================================================================================
+
+STEP 1: Clone or Download the Project
+--------------------------------------
+If using Git:
+  git clone <repository-url>
+  cd eli5-app
+
+If downloading ZIP:
+  Extract the ZIP file and navigate to the eli5-app folder
+
+STEP 2: Install Backend Dependencies
+-------------------------------------
+Open Terminal 1:
+  cd backend
+  npm install
+
+This installs:
+  - express (web framework)
+  - mongodb (database driver)
+  - bcryptjs (password hashing)
+  - jsonwebtoken (JWT authentication)
+  - cors (cross-origin requests)
+  - dotenv (environment variables)
+  - @google/generative-ai (Google Gemini AI)
+  - socket.io (real-time features)
+  - nodemon (auto-restart during development)
+
+STEP 3: Install Frontend Dependencies
+--------------------------------------
+Open Terminal 2:
+  cd frontend
+  npm install
+
+This installs:
+  - react & react-dom (UI library)
+  - react-router-dom (routing)
+  - axios (HTTP requests)
+  - socket.io-client (real-time client)
+  - react-hot-toast (notifications)
+  - react-icons (icons)
+  - tailwindcss (styling)
+  - vite (build tool)
+
+STEP 4: Configure Environment Variables
+----------------------------------------
+
+BACKEND (.env file in /backend folder):
+----------------------------------------
+Create a file named ".env" in the backend folder with:
+
+  PORT=5000
+  MONGO_URI=mongodb://localhost:27017/eli5
+  JWT_SECRET=your_super_secret_jwt_key_change_this_to_something_secure
+  JWT_REFRESH_SECRET=your_super_secret_refresh_key_change_this_to_something_secure
+  AI_API_KEY=your_google_gemini_api_key_here
+
+Explanation of each variable:
+  - PORT: Backend server port (default 5000)
+  - MONGO_URI: MongoDB connection string
+    * Local: mongodb://localhost:27017/eli5
+    * Atlas: mongodb+srv://username:password@cluster.mongodb.net/eli5
+  - JWT_SECRET: Secret key for JWT access tokens (use a long random string)
+  - JWT_REFRESH_SECRET: Secret key for refresh tokens (different from JWT_SECRET)
+  - AI_API_KEY: Get from https://makersuite.google.com/app/apikey
+
+FRONTEND (.env file in /frontend folder):
+------------------------------------------
+Create a file named ".env" in the frontend folder with:
+
+  VITE_API_URL=http://localhost:5000/api
+
+STEP 5: Set up MongoDB
+-----------------------
+Option A: Local MongoDB Installation
+  - Download MongoDB from https://www.mongodb.com/try/download/community
+  - Install and start MongoDB service
+  - On Ubuntu: sudo systemctl start mongod
+  - On Mac: brew services start mongodb-community
+  - On Windows: net start MongoDB
+
+Option B: MongoDB Atlas (Cloud)
+  - Go to https://cloud.mongodb.com
+  - Create a free cluster
+  - Get connection string
+  - Replace MONGO_URI in .env with your Atlas connection string
+
+STEP 6: Get Google Gemini API Key
+---------------------------------
+  1. Go to https://makersuite.google.com/app/apikey
+  2. Sign in with Google account
+  3. Click "Create API Key"
+  4. Copy the API key
+  5. Paste it in backend/.env as AI_API_KEY
+
+STEP 7: Create Admin User (IMPORTANT)
+--------------------------------------
+The first admin needs to be created manually. Run:
+
+  cd backend
+  node scripts/createSpecificAdmin.js
+
+This creates an admin account with:
+  Email: admin_eli5@gmail.com
+  Username: admin
+  Password: admin@123
+
+You can change these credentials in the script file.
+
+STEP 8: Start the Application
+-----------------------------
+Terminal 1 (Backend):
+  cd backend
+  npm run dev
+
+Terminal 2 (Frontend):
+  cd frontend
+  npm run dev
+
+The application will be available at:
+  Frontend: http://localhost:5173
+  Backend API: http://localhost:5000
+
+================================================================================
+                            ADMIN ACCOUNT DETAILS
+================================================================================
+
+Default Admin Credentials (from createSpecificAdmin.js):
+  Email:    admin_eli5@gmail.com
+  Username: admin
+  Password: admin@123
+
+After login, you can:
+  - Access Admin Dashboard at http://localhost:5173/admin
+  - Add more admins
+  - Manage users, posts, and comments
+  - View analytics and statistics
+
+To create additional admins:
+  1. Login with admin account
+  2. Go to Admin Dashboard > Users tab
+  3. Click "Add New Admin" button
+  4. Fill in email, username, and password
+
+================================================================================
+                            FEATURES OVERVIEW
+================================================================================
+
+For All Users (Logged in or Anonymous):
+----------------------------------------
+  ✓ Browse and search questions
+  ✓ Read answers from AI and community
+  ✓ Post questions (without login)
+  ✓ Add comments/answers (without login)
+  ✓ View real-time online users count
+
+For Registered Users:
+--------------------
+  ✓ Upvote/Downvote posts and comments
+  ✓ Get notifications for mentions and replies
+  ✓ Build reputation score
+  ✓ View personal profile with activity
+  ✓ Track questions asked and answers given
+
+For Admin Users:
+----------------
+  ✓ Full access to Admin Dashboard
+  ✓ View platform analytics (users, posts, comments, votes)
+  ✓ Manage all users (change roles, delete)
+  ✓ Add new admins
+  ✓ Delete inappropriate posts or comments
+  ✓ Regenerate AI answers for posts
+  ✓ Monitor user activity
+  ✓ View top users and popular content
+
+AI Features:
+------------
+  ✓ Automatic AI answer generation for new questions
+  ✓ Simple explanations suitable for beginners
+  ✓ AI answers appear as first comment
+  ✓ Real-time notification when AI answers
+
+Real-time Features:
+-------------------
+  ✓ Live online users counter
+  ✓ Instant notifications for new answers
+  ✓ Real-time vote updates
+  ✓ Socket.IO for WebSocket connections
+
+================================================================================
+                            API ENDPOINTS
+================================================================================
+
+Authentication:
+  POST   /api/auth/register     - Register new user
+  POST   /api/auth/login        - Login user
+  POST   /api/auth/refresh      - Refresh JWT token
+
+Posts:
+  POST   /api/posts             - Create new post
+  GET    /api/posts/:id         - Get post by ID
+
+Comments:
+  POST   /api/comments          - Add comment
+  GET    /api/comments/post/:postId - Get comments for post
+  GET    /api/comments/replies/:commentId - Get comment replies
+
+Votes:
+  POST   /api/votes             - Upvote/Downvote
+
+Feed:
+  GET    /api/feed              - Get posts feed (paginated)
+
+Users:
+  GET    /api/users/me          - Get current user info
+  GET    /api/users/:userId     - Get user profile
+
+Admin (Protected):
+  GET    /api/admin/stats       - Dashboard statistics
+  GET    /api/admin/users       - List all users
+  POST   /api/admin/users/create-admin - Create new admin
+  PUT    /api/admin/users/:userId/role - Update user role
+  DELETE /api/admin/users/:userId - Delete user
+  GET    /api/admin/posts       - List all posts
+  DELETE /api/admin/posts/:postId - Delete post
+  GET    /api/admin/comments    - List all comments
+  DELETE /api/admin/comments/:commentId - Delete comment
+
+================================================================================
+                            TROUBLESHOOTING
+================================================================================
+
+Issue 1: MongoDB Connection Error
+----------------------------------
+Error: "MongoNetworkError" or "MongoServerSelectionError"
+
+Solutions:
+  - Make sure MongoDB is running: sudo systemctl status mongod
+  - Check MONGO_URI in .env file
+  - If using Atlas, check IP whitelist
+  - Verify network connectivity
+
+Issue 2: Gemini AI API Error
+----------------------------
+Error: "404 Not Found" or "API key invalid"
+
+Solutions:
+  - Verify AI_API_KEY in .env
+  - Check if API key has Gemini API enabled
+  - Try different model names in aiService.js
+  - Ensure API key has billing enabled (free tier available)
+
+Issue 3: Port Already in Use
+----------------------------
+Error: "EADDRINUSE: address already in use :::5000"
+
+Solutions:
+  - Kill process using the port:
+    Linux/Mac: lsof -ti:5000 | xargs kill -9
+    Windows: netstat -ano | findstr :5000
+  - Change PORT in .env file
+
+Issue 4: Tailwind CSS Not Working
+---------------------------------
+Symptoms: No styling, plain HTML
+
+Solutions:
+  - Run: cd frontend && npm run dev
+  - Check tailwind.config.js has correct content paths
+  - Verify index.css has @tailwind directives
+  - Clear browser cache
+
+Issue 5: Socket.IO Connection Failed
+------------------------------------
+Symptoms: Online count shows 0, no real-time updates
+
+Solutions:
+  - Check backend is running on port 5000
+  - Verify CORS settings in server.js
+  - Check firewall settings
+  - Look for console errors in browser DevTools
+
+Issue 6: Admin Dashboard Not Loading
+------------------------------------
+Symptoms: Blank page or access denied
+
+Solutions:
+  - Verify user has admin role in database
+  - Run createSpecificAdmin.js script
+  - Check if admin route is in App.jsx
+  - Clear localStorage and login again
+
+Issue 7: Images/Assets Not Loading
+----------------------------------
+Solutions:
+  - Check file paths are correct
+  - Verify public folder has required assets
+  - Clear Vite cache: rm -rf node_modules/.vite
+
+================================================================================
+                            DATABASE SCHEMAS
+================================================================================
+
+Users Collection:
+  - username (string, unique)
+  - email (string, unique)
+  - passwordHash (string)
+  - profile (object)
+  - stats (object: totalQuestions, totalAnswers, reputationScore)
+  - role (string: "user" or "admin")
+  - isActive (boolean)
+  - createdAt, updatedAt (dates)
+
+Posts Collection:
+  - title (string)
+  - description (string)
+  - authorId (ObjectId, references users)
+  - authorName (string)
+  - tags (array)
+  - aiResponseStatus (string: "pending", "generated", "failed")
+  - metrics (object: totalAnswers, views, upvotes, downvotes)
+  - createdAt, updatedAt (dates)
+
+Comments Collection:
+  - postId (ObjectId, references posts)
+  - userId (ObjectId, references users, nullable)
+  - authorName (string)
+  - content (string)
+  - isAI (boolean)
+  - parentId (ObjectId, nullable)
+  - mentions (array of ObjectIds)
+  - metrics (object: upvotes, downvotes)
+  - isAccepted (boolean)
+  - createdAt, updatedAt (dates)
+
+Votes Collection:
+  - userId (ObjectId, references users)
+  - targetId (ObjectId)
+  - targetType (string: "post" or "comment")
+  - voteType (string: "upvote" or "downvote")
+  - createdAt (date)
+
+Notifications Collection:
+  - recipientId (ObjectId, references users)
+  - senderId (ObjectId, references users)
+  - type (string: "mention", "reply", "vote")
+  - reference (object: postId, commentId)
+  - isRead (boolean)
+  - createdAt (date)
+
+================================================================================
+                            SCRIPTS REFERENCE
+================================================================================
+
+Backend Scripts (in /backend/scripts/):
+----------------------------------------
+createSpecificAdmin.js - Creates the initial admin user
+  Usage: node scripts/createSpecificAdmin.js
+  
+  This script:
+    - Connects to MongoDB
+    - Creates admin with predefined credentials
+    - Checks if admin already exists
+    - Sets role to "admin"
+
+To create custom admin script:
+  const { MongoClient } = require("mongodb");
+  const bcrypt = require("bcryptjs");
+  
+  async function createAdmin() {
+    const client = new MongoClient("mongodb://localhost:27017");
+    await client.connect();
+    const db = client.db("eli5");
+    
+    const passwordHash = await bcrypt.hash("yourPassword", 10);
+    await db.collection("users").insertOne({
+      username: "yourUsername",
+      email: "yourEmail@example.com",
+      passwordHash: passwordHash,
+      role: "admin",
+      createdAt: new Date()
+    });
+    
+    await client.close();
+  }
+  createAdmin();
+
+Package.json Scripts:
+---------------------
+Backend:
+  npm run dev   - Start backend with auto-restart (nodemon)
+  npm start     - Start backend normally
+
+Frontend:
+  npm run dev   - Start frontend development server (Vite)
+  npm run build - Build for production
+  npm run preview - Preview production build
+
+================================================================================
+                            DEPLOYMENT GUIDE
+================================================================================
+
+Production Deployment (Ubuntu/Debian Server):
+---------------------------------------------
+1. Install Node.js and MongoDB on server
+
+2. Clone repository:
+   git clone <your-repo> /var/www/eli5
+   cd /var/www/eli5
+
+3. Install dependencies:
+   cd backend && npm install --production
+   cd ../frontend && npm install && npm run build
+
+4. Set up PM2 for backend:
+   npm install -g pm2
+   cd backend
+   pm2 start server.js --name eli5-backend
+   pm2 save
+   pm2 startup
+
+5. Configure Nginx for frontend:
+   sudo nano /etc/nginx/sites-available/eli5
+   
+   server {
+     listen 80;
+     server_name your-domain.com;
+     
+     location / {
+       root /var/www/eli5/frontend/dist;
+       try_files $uri $uri/ /index.html;
+     }
+     
+     location /api {
+       proxy_pass http://localhost:5000;
+       proxy_http_version 1.1;
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection 'upgrade';
+       proxy_set_header Host $host;
+     }
+     
+     location /socket.io {
+       proxy_pass http://localhost:5000;
+       proxy_http_version 1.1;
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection "upgrade";
+     }
+   }
+
+6. Enable site:
+   sudo ln -s /etc/nginx/sites-available/eli5 /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+
+7. Set up SSL with Certbot:
+   sudo apt install certbot python3-certbot-nginx
+   sudo certbot --nginx -d your-domain.com
+
+Environment Variables for Production:
+-------------------------------------
+Update backend/.env:
+  NODE_ENV=production
+  MONGO_URI=your_production_mongodb_uri
+  JWT_SECRET=strong_random_string
+  JWT_REFRESH_SECRET=another_strong_random_string
+  AI_API_KEY=your_gemini_api_key
+
+================================================================================
+                            SECURITY NOTES
+================================================================================
+
+Important Security Practices:
+-----------------------------
+1. Never commit .env files to version control
+2. Use strong, unique JWT secrets (minimum 32 characters)
+3. Regularly update dependencies: npm audit fix
+4. Enable rate limiting for production
+5. Use HTTPS in production
+6. Sanitize user inputs to prevent XSS
+7. Implement CORS properly
+8. Hash passwords with bcrypt (already implemented)
+9. Use MongoDB with authentication enabled
+10. Regularly backup database
+
+Password Recommendations:
+------------------------
+  - Minimum 8 characters
+  - Mix of uppercase, lowercase, numbers, and symbols
+  - Avoid common passwords
+  - Use password manager
+
+================================================================================
+                            SUPPORT & CONTACT
+================================================================================
+
+If you encounter issues:
+  1. Check the Troubleshooting section above
+  2. Review console errors in browser (F12)
+  3. Check backend logs in terminal
+  4. Verify MongoDB is running
+  5. Ensure all environment variables are set
+
+Common Error Messages and Solutions:
+------------------------------------
+"Database not initialized" → Call connectDB() first
+"JWT expired" → User needs to login again
+"AI_API_KEY is not defined" → Check .env file
+"MONGO_URI is not defined" → Add MongoDB connection string
+"Duplicate key error" → Email or username already exists
+
+================================================================================
+                            VERSION INFORMATION
+================================================================================
+
+Current Version: 1.0.0
+Last Updated: April 2026
+
+Dependencies Versions (recommended):
+  Node.js: v18+
+  MongoDB: v6+
+  React: v18.2.0
+  Express: v4.18.2
+  Socket.IO: v4.6.1
+
+================================================================================
+                            LICENSE
+================================================================================
+
+This project is for educational purposes.
+Feel free to modify and use for your own projects.
+
+================================================================================
+                            ACKNOWLEDGMENTS
+================================================================================
+
+Built with:
+  - React.js for frontend
+  - Node.js/Express for backend
+  - MongoDB for database
+  - Google Gemini AI for AI responses
+  - Socket.IO for real-time features
+  - Tailwind CSS for styling
+
+================================================================================
+                                END OF README
+================================================================================
